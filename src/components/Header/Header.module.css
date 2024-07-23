@@ -1,33 +1,23 @@
 .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 8px 0;
-  margin-bottom: 16px;
-  border-bottom: 1px solid black;
+  padding: 20px 32px;
+  background-color: #f5f0fc;
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
+}
 
-  > nav {
-    display: flex;
-    gap: 30px;
-  }
+.nav-list {
+  list-style-type: none;
+  display: flex;
+  column-gap: 16px;
 }
 
 .link {
-  padding: 8px 16px;
-  border-radius: 4px;
+  color: #212121;
   text-decoration: none;
-  color: black;
   font-weight: 500;
+  font-size: 20px;
 }
 
-.link:hover {
-  color: orangered;
-}
-
-.linkActive {
-  composes: link;
-  color: orangered;
-  font-weight: 800;
-  cursor: default;
+.link:hover,
+.link:focus {
+  color: red;
 }

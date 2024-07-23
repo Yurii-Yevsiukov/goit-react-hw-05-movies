@@ -1,46 +1,77 @@
-import { useState, useEffect } from 'react';
+import { getSearchMoviesApi } from 'api/movies';
+import Error from 'components/Error/Error';
+import Loader from 'components/Loader/Loader';
+import MoviesList from 'components/MoviesList/MoviesList';
+import SearchMovieForm from 'components/SearchMovieForm/SearchMovieForm';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { fetchMovieByQuery } from '../../services/themoviedb-api';
-import { SearchBar } from 'components/SearchBar/SearchBar';
-import { MovieList } from 'components/MovieList/MovieList';
-import { Loader } from 'components/Loader/Loader';
+
+import css from './MoviesPage.module.css';
 
 const MoviesPage = () => {
-  const [searchResults, setSearchResults] = useState([]);
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const movieName = searchParams.get('query') ?? '';
-  const [isLoading, setIsLoading] = useState(false);
-
-  const updateQueryString = query => {
-    const nextParams = query !== '' ? { query } : {};
-    setSearchParams(nextParams);
-  };
+  const [isLastPage, setIsLastPage] = useState(true);
 
   useEffect(() => {
-    (async () => {
+    const query = searchParams.get('query');
+    if (!query) return;
+    const page = searchParams.get('page');
+
+    const getMovies = async () => {
       try {
-        setIsLoading(true);
-        const movies = await fetchMovieByQuery(movieName);
-        setSearchResults(movies);
+        setLoading(true);
+        setError(null);
+        setMovies([]);
+        const data = await getSearchMoviesApi(query, page);
+        setMovies(data.results);
+        setIsLastPage(page >= data.total_pages);
       } catch (error) {
-        console.error(error);
+        console.log(error);
+        setError(error);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
-    })();
-  }, [movieName]);
+    };
+
+    getMovies();
+  }, [searchParams]);
+
+  const handlePreviousClick = e => {
+    setSearchParams(prev => ({
+      query: prev.get('query'),
+      page: parseInt(prev.get('page')) - 1,
+    }));
+  };
+
+  const handleNextClick = e => {
+    setSearchParams(prev => ({
+      query: prev.get('query'),
+      page: parseInt(prev.get('page')) + 1,
+    }));
+  };
 
   return (
-    <div>
-      <SearchBar value={movieName} onChange={updateQueryString} />
-      {isLoading ? (
-        <Loader />
-      ) : movieName && searchResults.length === 0 ? (
-        <h2>🔎 Nothing found</h2>
-      ) : (
-        <MovieList movies={searchResults} />
-      )}
-    </div>
+    <section className="container">
+      <SearchMovieForm />
+      {loading && <Loader />}
+      {movies.length > 0 && <MoviesList movies={movies} />}
+      {error !== null && <Error message={error.message} />}
+      <div className={css.nav}>
+        {searchParams.get('page') > 1 && (
+          <button className={css.button} onClick={handlePreviousClick}>
+            &#60;
+          </button>
+        )}
+        {!isLastPage && (
+          <button className={css.button} onClick={handleNextClick}>
+            &#62;
+          </button>
+        )}
+      </div>
+    </section>
   );
 };
 

@@ -1,11 +1,20 @@
-import React from 'react';
-import { FadeLoader } from 'react-spinners';
+import { Rings } from 'react-loader-spinner';
+
 import css from './Loader.module.css';
 
-export const Loader = () => {
+const Loader = () => {
   return (
-    <div class={css.loaderContainer}>
-      <FadeLoader color="rgba(223, 92, 48, 1)" />
-    </div>
+    <>
+      <Rings
+        wrapperClass={css.loader}
+        visible={true}
+        height="80"
+        width="80"
+        color="green"
+        ariaLabel="rings-loading"
+      />
+    </>
   );
 };
+
+export default Loader;

@@ -1,25 +1,26 @@
-import { getTrendingMoviesApi } from 'api/movies';
+import { getMovieReviewsApi } from 'api/movies';
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import Loader from 'components/Loader/Loader';
-import MoviesList from 'components/MoviesList/MoviesList';
 import Error from 'components/Error/Error';
+import Reviews from 'components/Reviews/Reviews';
 
-import css from './HomePage.module.css';
-
-const HomePage = () => {
-  const [movies, setMovies] = useState([]);
+const ReviewsPage = () => {
+  const [reviews, setReviews] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const { movieId } = useParams();
+
   useEffect(() => {
+    if (!movieId) return;
     const getMovies = async () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await getTrendingMoviesApi();
-        setMovies(data.results);
+        const data = await getMovieReviewsApi(movieId);
+        setReviews(data.results);
       } catch (error) {
-        console.log(error);
         setError(error);
       } finally {
         setLoading(false);
@@ -27,16 +28,15 @@ const HomePage = () => {
     };
 
     getMovies();
-  }, []);
+  }, [movieId]);
 
   return (
-    <section className={`container ${css.section}`}>
-      <h1 className={css.title}>Trending today</h1>
+    <section>
       {loading && <Loader />}
-      {movies.length > 0 && <MoviesList movies={movies} />}
+      {reviews !== null && <Reviews reviews={reviews} />}
       {error !== null && <Error message={error.message} />}
     </section>
   );
 };
 
-export default HomePage;
+export default ReviewsPage;

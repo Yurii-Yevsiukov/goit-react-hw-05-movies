@@ -1,24 +1,34 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
+import { Suspense } from 'react';
+import { Footer } from 'components/Footer/Footer';
 import css from './Header.module.css';
+import Loader from 'components/Loader/Loader';
 
-export const Header = () => {
+const Header = () => {
   return (
-    <header className={css.header}>
-      <nav className={css.nav}>
-        <NavLink
-          to="/"
-          end
-          className={({ isActive }) => (isActive ? css.linkActive : css.link)}
-        >
-          Home
-        </NavLink>
-        <NavLink
-          to="/movies"
-          className={({ isActive }) => (isActive ? css.linkActive : css.link)}
-        >
-          Movie
-        </NavLink>
-      </nav>
-    </header>
+    <>
+      <header className={css.header}>
+        <nav>
+          <ul className={css['nav-list']}>
+            <li>
+              <NavLink className={css.link} to="/">
+                Home
+              </NavLink>
+            </li>
+            <li>
+              <NavLink className={css.link} to="/movies">
+                Movies
+              </NavLink>
+            </li>
+          </ul>
+        </nav>
+      </header>
+        <Suspense fallback={<Loader />}>
+          <Outlet />
+        </Suspense>
+      <Footer />
+    </>
   );
 };
+
+export default Header;

@@ -1,0 +1,16 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 24px;
+  padding-left: 24px;
+}
+
+.link {
+  font-size: 18px;
+}
+
+.link:hover,
+.link:focus {
+  color: red;
+}
